@@ -3,3 +3,4 @@ project(cw)
 
 add_subdirectory(app)
 add_subdirectory(inputbox)
+add_subdirectory(lua)

@@ -15,5 +15,6 @@ if(Boost_FOUND)
       "src/foo_bar.cpp")
   target_link_libraries(${PROJECT_NAME} 
       ${Boost_LIBRARIES}
+      lua
       inputbox)
 endif()
