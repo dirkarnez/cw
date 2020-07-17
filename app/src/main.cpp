@@ -14,7 +14,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
 #include <inputbox.h>
-#include <lua/lua.h>
+//#include <lua/lua.h>
 
 #include "foo_bar.h"
 
