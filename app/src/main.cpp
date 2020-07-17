@@ -9,7 +9,10 @@
 #include <string>
 #include <sstream>
 
-#include "boost/format.hpp"
+#include <boost/format.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
 #include <inputbox.h>
 
 #include "foo_bar.h"
@@ -35,6 +38,8 @@ public:
 	}
 };
 
+//https://stackoverflow.com/questions/38053233/c-why-did-boost-authors-use-a-struct-here-instead-of-a-class/38053913
+//MsgBox("Hello World!", 3, "MsgBox Example")
 //docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password mariadb
 class command {
 public:
@@ -49,9 +54,42 @@ public:
 		}
 		return fmter.str();
 	}
+
+	void load(const std::string& filename) {
+		// Create empty property tree object
+		boost::property_tree::ptree tree;
+
+		// Parse the XML into the property tree.
+		boost::property_tree::json_parser::read_json(filename, tree);
+
+		this->line = tree.get<string>("command");
+
+		//// Use the default-value version of get to find the debug level.
+		//// Note that the default value is used to deduce the target type.
+		//m_level = tree.get("debug.level", 0);
+
+		//// Use get_child to find the node containing the modules, and iterate over
+		//// its children. If the path cannot be resolved, get_child throws.
+		//// A C++11 for-range loop would also work.
+
+	}
 };
 
+class setting {
+	std::vector<command> command_list;
 
+	void load(const std::string& filename) {
+		// Create empty property tree object
+		boost::property_tree::ptree tree;
+
+		// Parse the XML into the property tree.
+		boost::property_tree::json_parser::read_json(filename, tree);
+
+		BOOST_FOREACH(boost::property_tree::ptree::value_type &v, tree.get_child("debug.modules")) {
+			cout << v.second.data();
+		}
+	}
+};
 
 #if defined(WIN32)
 int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
@@ -77,8 +115,8 @@ int main(int /*argc*/, char* /*argv*/[])
 	}
 	**/
 
-	  command c{};
-	  c.line = "docker run --rm -it -p %1%:3306 -e MYSQL_ROOT_PASSWORD=1234 mariadb";
+	  command c;
+	  c.load("settings.json");
 	  c.param_list = { param("port", "3306") };
 	  string cl = c.print();
 	  cout << cl << endl;
