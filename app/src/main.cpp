@@ -17,6 +17,8 @@
 #include <inputbox.h>
 //https://cpp.hotexamples.com/examples/-/-/luaL_loadstring/cpp-lual_loadstring-function-examples.html
 #include "foo_bar.h"
+#include <lua.hpp>
+#include <lauxlib.h>
 
 using namespace std;
 using namespace boost;
@@ -28,6 +30,13 @@ public:
 	string default_value;
 	string description;
 
+	string abd() {
+		lua_State* L = luaL_newstate();
+		luaL_openlibs(L);
+		luaL_dostring(L, "return 60 * 60");
+		cout << lua_tointeger(L, 1);
+		lua_close(L);
+	}
 	string prompt() {
 		return string(dependency_test::lib_a::InputBox(
 			const_cast<char*>(description.c_str()), 

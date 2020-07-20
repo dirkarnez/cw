@@ -30,5 +30,17 @@
 				"description": "is the database system administrator (userid = 'sa') password used to connect to SQL Server once the container is running. Important note: This password needs to include at least 8 characters of at least three of these four categories: uppercase letters, lowercase letters, numbers and non-alphanumeric symbols."
 			}
 		]
+	},
+	{
+		"name": "shutdown", 
+		"command": "shutdown -s -f -t %1%",
+		"parameters": [
+			{
+				"default": 60,
+				"displayName": "minutes",
+				"description": "",
+				"evaluate": "minutes x 60"
+			}
+		]
 	}
 ]
