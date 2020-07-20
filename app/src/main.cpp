@@ -29,11 +29,12 @@ public:
 	string display_name;
 	string default_value;
 	string description;
-
+	
+	// https://www.lua.org/manual/5.1/manual.html
 	string abd() {
 		lua_State* L = luaL_newstate();
 		luaL_openlibs(L);
-		luaL_dostring(L, "return 60 * 60");
+		luaL_dostring(L, "local hour = 60\nlocal minute = 1\nlocal second = 9\nreturn (hour * 60 * 60) + (minute * 60) + second");
 		cout << lua_tointeger(L, 1);
 		lua_close(L);
 	}
@@ -117,9 +118,16 @@ int main(int /*argc*/, char* /*argv*/[])
 {
   try
   {
-	  setting s;
-	  s.load("settings.json");
-	  s.get(argv[1]);
+	  //setting s;
+	  //s.load("settings.json");
+	  //s.get(argv[1]);
+
+	  lua_State* L = luaL_newstate();
+	  luaL_openlibs(L);
+	  luaL_dostring(L, "local hour = 1\nlocal minute = 30\nlocal second = 9\nreturn (hour * 60 * 60) + (minute * 60) + second");
+	  cout << lua_tointeger(L, 1);
+	  lua_close(L);
+
 	  return EXIT_SUCCESS;
   }
   catch (const std::exception& e)
