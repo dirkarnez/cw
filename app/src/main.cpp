@@ -1,6 +1,10 @@
 #if defined(WIN32)
 #include <tchar.h>
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
+
 #endif
 
 #include <cstdlib>
@@ -13,6 +17,10 @@
 #include <boost/format.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/process.hpp>
+#include <boost/process/env.hpp>
+#include <boost/process/environment.hpp>
+#include <boost/process/system.hpp>
 #include <boost/foreach.hpp>
 #include <inputbox.h>
 //https://cpp.hotexamples.com/examples/-/-/luaL_loadstring/cpp-lual_loadstring-function-examples.html
@@ -154,11 +162,11 @@ public:
 		string cl = command_list[arg].print();
 		if (cl.empty()) {
 			cout << "Invalid input" << endl;
-			system("pause");
+			std::system("pause");
 		}
 		else {
 			cout << cl << endl;
-			system(cl.c_str());
+			std::system(cl.c_str());
 		}
 	}
 };
@@ -171,9 +179,15 @@ int main(int /*argc*/, char* /*argv*/[])
 {
   try
   {
-	  setting s;
-	  s.load("settings.json");
-	  s.get(argv[1]);
+	  //setting s;
+	  //s.load("settings.json");
+	  //s.get(argv[1]);
+
+	  auto env = boost::this_process::environment();
+	  env["PATH"] = "D:\\mingw64\\bin";
+	  boost::process::system("cmd", env);
+	  //setenv("PATH", ", 0);
+
 
 	  return EXIT_SUCCESS;
   }
