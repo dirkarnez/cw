@@ -23,26 +23,57 @@
 using namespace std;
 using namespace boost;
 
+class Variable {
+public:
+	Variable() = default;
+	string name;
+	string display_name;
+	string default_value;
+	string description;
+};
+
 class param {
 public:
 	param() = default;
 	string display_name;
 	string default_value;
 	string description;
+	string evaluate;
+
+	std::vector<Variable> variable_list;
 	
 	// https://www.lua.org/manual/5.1/manual.html
-	string abd() {
+	int eval(string expression) {
 		lua_State* L = luaL_newstate();
 		luaL_openlibs(L);
-		luaL_dostring(L, "local hour = 60\nlocal minute = 1\nlocal second = 9\nreturn (hour * 60 * 60) + (minute * 60) + second");
-		cout << lua_tointeger(L, 1);
+		luaL_dostring(L, expression.c_str());
+		int temp = lua_tointeger(L, 1);
 		lua_close(L);
+		return temp;
 	}
+
 	string prompt() {
-		return string(dependency_test::lib_a::InputBox(
-			const_cast<char*>(description.c_str()), 
-			const_cast<char*>(display_name.c_str()), 
-			const_cast<char*>(default_value.c_str())));
+		if (variable_list.empty()) {
+			return string(dependency_test::lib_a::InputBox(
+				const_cast<char*>(description.c_str()), 
+				const_cast<char*>(display_name.c_str()), 
+				const_cast<char*>(default_value.c_str())));
+		}
+		else {
+			stringstream expression_stream;
+			for (Variable variable : variable_list) {
+				expression_stream << "local " << variable.name << "=" << string(dependency_test::lib_a::InputBox(
+					const_cast<char*>(variable.description.c_str()),
+					const_cast<char*>(variable.display_name.c_str()),
+					const_cast<char*>(variable.default_value.c_str()))) << "\n";
+			}
+			expression_stream << "return " << evaluate;
+			string expression = expression_stream.str();
+			int result = eval(expression);
+			stringstream ss;
+			ss << result;
+			return ss.str();
+		}
 	}
 };
 
@@ -64,12 +95,13 @@ public:
 			}
 			fmter = fmter % input;
 		}
+
 		return fmter.str();
 	}
 };
 
 class setting {
-	std::map<string, command> command_list;
+	map<string, command> command_list;
 
 public:
 	void load(const std::string& filename) {
@@ -88,9 +120,30 @@ public:
 			{
 				auto parameter_node = parameter.second;
 				param p;
-				p.default_value = parameter_node.get<string>("default");
-				p.display_name = parameter_node.get<string>("displayName");
-				p.description = parameter_node.get<string>("description");
+				p.variable_list = {};
+				
+				if (boost::optional<string> evaluate = parameter_node.get_optional<string>("evaluate"))
+				{
+					p.evaluate = evaluate.get();
+				}
+				else {
+					p.default_value = parameter_node.get<string>("default");
+					p.display_name = parameter_node.get<string>("displayName");
+					p.description = parameter_node.get<string>("description");
+				}
+
+				if (!p.evaluate.empty()) {
+					BOOST_FOREACH(boost::property_tree::ptree::value_type &variable, parameter_node.get_child("variables"))
+					{
+						auto variable_node = variable.second;
+						Variable v;
+						v.name = variable_node.get<string>("name");
+						v.default_value = variable_node.get<string>("default");
+						v.display_name = variable_node.get<string>("displayName");
+						v.description = variable_node.get<string>("description");
+						p.variable_list.push_back(v);
+					}
+				}
 				c.param_list.push_back(p);
 			}
 			command_list.insert(pair<string, command>(c.name, c));
@@ -118,15 +171,9 @@ int main(int /*argc*/, char* /*argv*/[])
 {
   try
   {
-	  //setting s;
-	  //s.load("settings.json");
-	  //s.get(argv[1]);
-
-	  lua_State* L = luaL_newstate();
-	  luaL_openlibs(L);
-	  luaL_dostring(L, "local hour = 1\nlocal minute = 30\nlocal second = 9\nreturn (hour * 60 * 60) + (minute * 60) + second");
-	  cout << lua_tointeger(L, 1);
-	  lua_close(L);
+	  setting s;
+	  s.load("settings.json");
+	  s.get(argv[1]);
 
 	  return EXIT_SUCCESS;
   }
