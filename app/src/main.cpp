@@ -24,6 +24,7 @@
 #include <lauxlib.h>
 #include <boost\filesystem\path.hpp>
 #include <boost\filesystem\operations.hpp>
+#include <boost/dll/runtime_symbol_info.hpp>
 
 using namespace std;
 using namespace boost;
@@ -174,7 +175,8 @@ int main(int /*argc*/, char* /*argv*/[])
 	  setting s;
 
 	  using namespace boost::filesystem;
-	  path p("cw-scripts");
+	  
+	  path p = boost::dll::program_location().parent_path() / "cw-scripts";
 	  try
 	  {
 		  if (exists(p))
