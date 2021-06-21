@@ -16,6 +16,17 @@ set(YAML_CPP_INSTALL OFF)
 
 FetchContent_MakeAvailable(yaml-cpp)
 
+
+FetchContent_Declare(
+    elements
+    GIT_REPOSITORY https://github.com/cycfi/elements.git
+    GIT_TAG master
+)
+
+# set(ELEMENTS_BUILD_EXAMPLES OFF)
+
+FetchContent_MakeAvailable(elements)
+
 set(Boost_NO_SYSTEM_PATHS TRUE)
 set(Boost_USE_STATIC_LIBS TRUE)
 set(BOOST_ROOT "C:/Code Projects/Cpp Libraries/boost_1_74_0")
@@ -32,5 +43,6 @@ if(Boost_FOUND)
       ${Boost_LIBRARIES}
       lua
       inputbox
-      yaml-cpp)
+      yaml-cpp
+      elements)
 endif()
