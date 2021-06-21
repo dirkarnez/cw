@@ -29,6 +29,9 @@
 
 //#include <boost/process/environment.hpp>
 #include <boost\dll\runtime_symbol_info.hpp>
+
+#include <yaml-cpp/yaml.h>
+#include <yaml-cpp/node/node.h>
 using namespace std;
 using namespace boost;
 
@@ -201,6 +204,14 @@ int main(int /*argc*/, char* /*argv*/[])
 
 	//std::system("C:\\windows\\System32\\cmd.exe");
 
+
+	YAML::Node config = YAML::LoadFile("../../../config.yaml");
+
+	if (config["name"]) {
+		cout << "name: " << config["name"].as<string>() << "\n";
+	}
+
+
   try
   {
 	  Setting s;
@@ -220,7 +231,7 @@ int main(int /*argc*/, char* /*argv*/[])
 				  }
 			  }
 			  else {
-				cout << p << " exists, but is not a  directory\n";
+				cout << p << " exists, but is not a directory\n";
 			  }
 		  }
 		  else {
