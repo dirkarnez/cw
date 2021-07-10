@@ -23,7 +23,7 @@ FetchContent_Declare(
     GIT_TAG master
 )
 
-# set(ELEMENTS_BUILD_EXAMPLES OFF)
+set(ELEMENTS_BUILD_EXAMPLES OFF)
 
 FetchContent_MakeAvailable(elements)
 
