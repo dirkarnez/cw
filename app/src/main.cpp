@@ -94,11 +94,11 @@ auto make_buttons(view& view_)
 
 auto make_controls(view& view_)
 {
-	auto  check_box1 = check_box("Reionizing electrons");
+	auto  check_box1 = share(check_box("Reionizing electrons"));
 	auto  check_box2 = check_box("The Nexus Meridian Unfolding");
 	auto  check_box3 = check_box("Serenity Dreamscape Exploration");
 
-	check_box1.value(true);
+	check_box1->value(true);
 	check_box2.value(true);
 	check_box3.value(true);
 
@@ -107,7 +107,7 @@ auto make_controls(view& view_)
 			margin({ 10, 10, 20, 20 },
 				top_margin(25,
 					vtile(
-						top_margin(10, align_left(check_box1)),
+						top_margin(10, align_left(hold(check_box1))),
 						top_margin(10, align_left(check_box2)),
 						top_margin(10, align_left(check_box3))
 					)
@@ -136,56 +136,39 @@ auto make_controls(view& view_)
 
 	auto indicator_color = get_theme().indicator_color;
 
-	auto  icon_buttons =
-		group("Icon Buttons",
-			margin({ 10, 10, 20, 10 },
-				vtile(
-					top_margin(35,
-						htile(
-							align_center(toggle_icon_button(icons::power, 1.2, indicator_color)),
-							align_center(icon_button(icons::magnifying_glass, 1.2)),
-							align_center(icon_button(icons::left_circled, 1.2)),
-							align_center(toggle_icon_button(icons::left, icons::right, 1.2))
-						)
-					)
-				)
-			)
+	auto executeButton = button("Momentary Button");
+	executeButton.on_click = [check_box1](bool) {
+		MessageBox(
+			NULL,
+			(LPCWSTR)(check_box1->value() ? L"true": L"false"),
+			(LPCWSTR)L"Account Details",
+			MB_ICONWARNING | MB_CANCELTRYCONTINUE | MB_DEFBUTTON2
 		);
 
-	float const button_scale = 1.0 / 4;
-	sprite power_button = sprite{ "power_180x632.png", 158 * button_scale, button_scale };
-	sprite phase_button = sprite{ "phase_180x632.png", 158 * button_scale, button_scale };
-	sprite mail_button = sprite{ "mail_180x632.png", 158 * button_scale, button_scale };
-	sprite transpo_button = sprite{ "transpo_180x632.png", 158 * button_scale, button_scale };
-
-	auto  sprite_buttons =
-		group("Sprite Buttons",
-			margin({ 10, 10, 20, 10 },
+		//std::system(cl.c_str());
+	};
+	
+	
+	
+	auto  icon_buttons =
+		vtile(
+			top_margin(35,
 				vtile(
-					top_margin(35,
-						htile(
-							align_center(toggle_button(power_button)),
-							align_center(toggle_button(phase_button)),
-							align_center(momentary_button(mail_button)),
-							align_center(toggle_button(transpo_button))
-						)
-					)
+					top_margin(20, executeButton)
 				)
 			)
 		);
 
 	return
 		vtile(
+			vscroller(margin({ 20, 20, 20, 20 }, vtile(
+				margin({ 20, 20, 20, 20 }, check_boxes),
+				margin({ 20, 20, 20, 20 }, radio_buttons)
+			)))
+			,
 			htile(
-				make_buttons(view_),
-				vtile(
-					margin({ 20, 20, 20, 20 }, check_boxes),
-					margin({ 20, 20, 20, 20 }, radio_buttons)
-				)
-			),
-			htile(
-				hmin_size(250, margin({ 20, 20, 20, 20 }, icon_buttons)),
-				hmin_size(250, margin({ 20, 20, 20, 20 }, sprite_buttons))
+				hmin_size(250, margin({ 20, 20, 20, 20 }, icon_buttons))
+				//, hmin_size(250, margin({ 20, 20, 20, 20 }, sprite_buttons))
 			)
 		);
 }
@@ -278,21 +261,21 @@ public:
 	Setting(path p) {
 		try
 		{
-			if (exists(p))
+			if (!exists(p))
 			{
-				if (is_directory(p)) {
-					for (auto& _p : recursive_directory_iterator(p)) {
-						if (!is_directory(_p) && _p.path().extension() == ".yml") {
-							add(_p.path());
-						}
-					}
-				}
-				else {
-					cout << p << " exists, but is not a directory\n";
-				}
-			}
-			else {
 				cout << p << " does not exist\n";
+				return;
+			}
+
+			if (!is_directory(p)) {
+				cout << p << " exists, but is not a directory\n";
+				return;
+			}
+
+			for (auto& _p : recursive_directory_iterator(p)) {
+				if (!is_directory(_p) && _p.path().extension() == ".yml") {
+					add(_p.path());
+				}
 			}
 		}
 		catch (const filesystem_error& ex)
@@ -300,122 +283,82 @@ public:
 			cout << ex.what() << '\n';
 		}
 	}
+
+	void get(char* arg) {
+		// TODO change to render ui
+
+		for (Command command : this->wrapped_command_list[arg].command_list) {
+			string cl = command.print();
+			if (cl.empty()) {
+				cout << "Invalid input" << endl;
+				std::system("pause");
+			}
+			else {
+				cout << cl << endl;
+				std::system(cl.c_str());
+			}
+		}
+	}
 private:
-	//map<string, WrappedCommand> wrapped_command_list;
+	map<string, WrappedCommand> wrapped_command_list;
 
 	void add(path p) {
 		using namespace YAML;
 
+		cout << "LoadFile: " << p.string() << endl;
+
 		Node fileNode = LoadFile(p.string());
+
+		WrappedCommand wrappedCommand;
 
 		Node nameNode = fileNode["name"];
 		if (nameNode) {
-			cout << "name: " << nameNode.as<string>() << endl;
+			wrappedCommand.name = nameNode.as<string>();
+			cout << "name: " << wrappedCommand.name << endl;
 		}
 
 		Node commandsNode = fileNode["commands"];
 
 		if (commandsNode) {
+			wrappedCommand.command_list = {};
+
 			vector<Node> commands = commandsNode.as<vector<Node>>();
 
 			for (int i = 0; i < commands.size(); i++) {
 				Node commandNode = commands.at(i);
 
 				Node commandCommandNode = commandNode["command"];
-
+				Command command;
+				
 				if (commandCommandNode) {
-					cout << "command: " << commandCommandNode.as<string>() << endl;
+					command.line = commandCommandNode.as<string>();
+					cout << "command: " << command.line << endl;
 				}
 
 				vector<Node> parameters = commandNode["parameters"].as<vector<Node>>();
+			
 				for (int j = 0; j < parameters.size(); j++) {
 					Node parameterNode = parameters.at(j);
+					Param p;
 
-					cout << "default: " << parameterNode["default"].as<string>() << endl;
-					cout << "displayName: " << parameterNode["displayName"].as<string>() << endl;
-					cout << "description: " << parameterNode["description"].as<string>() << endl;
+
+					p.default_value = parameterNode["default"].as<string>();
+					p.display_name = parameterNode["displayName"].as<string>();
+					p.description = parameterNode["description"].as<string>();
+
+					cout << "default: " << p.default_value << endl;
+					cout << "displayName: " << p.display_name << endl;
+					cout << "description: " << p.description << endl;
+
+					command.param_list.push_back(p);
 				}
+				wrappedCommand.command_list.push_back(command);
+			
 			}
 		}
+
+		wrapped_command_list.insert(pair<string, WrappedCommand>(wrappedCommand.name, wrappedCommand));
 	}
-
-
-//
-//public:
-//	map<string, WrappedCommand> wrapped_command_list;
-//
-//	void add(const boost::filesystem::path& path) {
-//		using namespace boost::property_tree;
-//
-//		ptree tree;
-//		json_parser::read_json(path.string(), tree);
-//
-//		WrappedCommand wc;
-//		wc.name = tree.get<string>("name");
-//		wc.command_list = {};
-//
-//		BOOST_FOREACH(boost::property_tree::ptree::value_type & command_value, tree.get_child("commands"))
-//		{
-//			auto command_node = command_value.second;
-//			Command command;
-//			command.line = command_node.get<string>("command");
-//	
-//			boost::optional<ptree&> optional_parameter_value = command_node.get_child_optional("parameters");
-//
-//			if (optional_parameter_value.has_value()) {
-//				BOOST_FOREACH(boost::property_tree::ptree::value_type & parameter_value, optional_parameter_value.get())
-//				{
-//					auto parameter_node = parameter_value.second;
-//					Param p;
-//					p.variable_list = {};
-//
-//					if (boost::optional<string> evaluate = parameter_node.get_optional<string>("evaluate"))
-//					{
-//						p.evaluate = evaluate.get();
-//					}
-//					else {
-//						p.display_name = parameter_node.get<string>("displayName");
-//						p.description = parameter_node.get<string>("description");
-//						p.default_value = parameter_node.get<string>("default");
-//						boost::replace_all(p.default_value, "{{SCRIPT_LOCATION}}", path.branch_path().string()); 
-//						// buggy, see https://stackoverflow.com/questions/34466077/how-to-implement-escaping
-//					}
-//
-//					if (!p.evaluate.empty()) {
-//						BOOST_FOREACH(boost::property_tree::ptree::value_type & variable, parameter_node.get_child("variables"))
-//						{
-//							auto variable_node = variable.second;
-//							Variable v;
-//							v.name = variable_node.get<string>("name");
-//							v.default_value = variable_node.get<string>("default");
-//							v.display_name = variable_node.get<string>("displayName");
-//							v.description = variable_node.get<string>("description");
-//							p.variable_list.push_back(v);
-//						}
-//					}
-//					command.param_list.push_back(p);
-//				}
-//			}
-//			
-//			wc.command_list.push_back(command);
-//		}
-//
-//		wrapped_command_list.insert(pair<string, WrappedCommand>(wc.name, wc));
-//	}
-//
-//	void get(_TCHAR* arg) {
-//		//for (Command command : this->wrapped_command_list[arg].command_list) {
-//		//	string cl = command.print();
-//		//	if (cl.empty()) {
-//		//		cout << "Invalid input" << endl;
-//		//		std::system("pause");
-//		//	}
-//		//	else {
-//		//		cout << cl << endl;
-//		//		std::system(cl.c_str());
-//		//	}
-//		//}
-//	}
 };
 
 //#if defined(WIN32)
@@ -436,31 +379,31 @@ int main(int argc, char* argv[])
 	//	cout << "name: " << config["name"].as<string>() << "\n";
 	//}
 
-	//app _app(argc, argv, "Buttons", "com.cycfi.buttons");
-	//window _win(_app.name());
-	//_win.on_close = [&_app]() { _app.stop(); };
-
-	//view view_(_win);
-
-	//view_.content(
-	//	make_controls(view_),
-	//	background
-	//);
-
-	//_app.run();
-
 	Setting s(boost::dll::program_location().parent_path() / "cw-scripts");
-
 
   try
   {
+	  s.get(argv[1]);
 
 
+
+	app _app(argc, argv, "Buttons", "com.cycfi.buttons");
+	window _win(_app.name());
+	_win.on_close = [&_app]() { _app.stop(); };
+
+	view view_(_win);
+
+	view_.content(
+		make_controls(view_),
+		background
+	);
+
+	_app.run();
 
 	  
 	 
 
-	 // s.get(argv[1]);
+	 //
 
 	 return EXIT_SUCCESS;
   }
