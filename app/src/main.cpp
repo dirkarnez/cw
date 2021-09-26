@@ -92,7 +92,8 @@ auto make_buttons(view& view_)
 		);
 }
 
-auto make_controls(view& view_)
+template <typename Container, typename Base>
+auto make_controls(view& view_, std::function<composite<Container, Base>(void)> renderer)
 {
 	auto  check_box1 = share(check_box("Reionizing electrons"));
 	auto  check_box2 = check_box("The Nexus Meridian Unfolding");
@@ -161,10 +162,7 @@ auto make_controls(view& view_)
 
 	return
 		vtile(
-			vscroller(margin({ 20, 20, 20, 20 }, vtile(
-				margin({ 20, 20, 20, 20 }, check_boxes),
-				margin({ 20, 20, 20, 20 }, radio_buttons)
-			)))
+			vscroller(margin({ 20, 20, 20, 20 }, renderer()))
 			,
 			htile(
 				hmin_size(250, margin({ 20, 20, 20, 20 }, icon_buttons))
@@ -205,28 +203,28 @@ public:
 		return temp;
 	}
 
-	string prompt() {
-		if (variable_list.empty()) {
-			return string(dependency_test::lib_a::InputBox(
-				const_cast<char*>(description.c_str()), 
-				const_cast<char*>(display_name.c_str()), 
-				const_cast<char*>(default_value.c_str())));
-		}
-		else {
-			stringstream expression_stream;
-			for (Variable variable : variable_list) {
-				expression_stream << "local " << variable.name << "=" << string(dependency_test::lib_a::InputBox(
-					const_cast<char*>(variable.description.c_str()),
-					const_cast<char*>(variable.display_name.c_str()),
-					const_cast<char*>(variable.default_value.c_str()))) << "\n";
-			}
-			expression_stream << "return " << evaluate;
-			string expression = expression_stream.str();
-			stringstream ss;
-			ss << eval(expression);
-			return ss.str();
-		}
-	}
+	//string prompt() {
+	//	if (variable_list.empty()) {
+	//		return string(dependency_test::lib_a::InputBox(
+	//			const_cast<char*>(description.c_str()), 
+	//			const_cast<char*>(display_name.c_str()), 
+	//			const_cast<char*>(default_value.c_str())));
+	//	}
+	//	else {
+	//		stringstream expression_stream;
+	//		for (Variable variable : variable_list) {
+	//			expression_stream << "local " << variable.name << "=" << string(dependency_test::lib_a::InputBox(
+	//				const_cast<char*>(variable.description.c_str()),
+	//				const_cast<char*>(variable.display_name.c_str()),
+	//				const_cast<char*>(variable.default_value.c_str()))) << "\n";
+	//		}
+	//		expression_stream << "return " << evaluate;
+	//		string expression = expression_stream.str();
+	//		stringstream ss;
+	//		ss << eval(expression);
+	//		return ss.str();
+	//	}
+	//}
 };
 
 class Command {
@@ -234,18 +232,18 @@ public:
 	string line;
 	vector<Param> param_list;
 
-	string print() {
-		format fmter(line);
-		for (Param param : this->param_list) {
-			string input = param.prompt();
-			if (input.empty()) {
-				return string();
-			}
-			fmter = fmter % input;
-		}
+	//string print() {
+	//	format fmter(line);
+	//	for (Param param : this->param_list) {
+	//		string input = param.prompt();
+	//		if (input.empty()) {
+	//			return string();
+	//		}
+	//		fmter = fmter % input;
+	//	}
 
-		return fmter.str();
-	}
+	//	return fmter.str();
+	//}
 };
 
 //MsgBox("Hello World!", 3, "MsgBox Example")
@@ -284,20 +282,8 @@ public:
 		}
 	}
 
-	void get(char* arg) {
-		// TODO change to render ui
-
-		for (Command command : this->wrapped_command_list[arg].command_list) {
-			string cl = command.print();
-			if (cl.empty()) {
-				cout << "Invalid input" << endl;
-				std::system("pause");
-			}
-			else {
-				cout << cl << endl;
-				std::system(cl.c_str());
-			}
-		}
+	vector<Command> get(char* arg) {
+		return this->wrapped_command_list[arg].command_list;
 	}
 private:
 	map<string, WrappedCommand> wrapped_command_list;
@@ -360,6 +346,25 @@ private:
 		wrapped_command_list.insert(pair<string, WrappedCommand>(wrappedCommand.name, wrappedCommand));
 	}
 };
+//
+//template <typename T, std::size_t... I>
+//auto read_row(std::vector<T> data, std::index_sequence<I...>)
+//{
+//	return vtile(data.at(I)...);
+//}
+//
+//template <std::size_t N, typename T>
+//auto read_row(std::vector<T> data)
+//{
+//	return read_row(data, std::make_index_sequence<N>{});
+//}
+
+//template <int data>
+//struct MultiplicationLine<0, target> {
+//	const int value = 0;
+//	vtile(rest);
+//};
+
 
 //#if defined(WIN32)
 //int _tmain(int argc, _TCHAR* argv[])
@@ -370,50 +375,100 @@ int main(int argc, char* argv[])
 {
 	//_putenv(string("PATH=").append(getenv("PATH")).append("c:\\mylib;c:\\yourlib").c_str());
 
-	//std::system("C:\\windows\\System32\\cmd.exe");
+
+		Setting s(boost::dll::program_location().parent_path() / "cw-scripts");
+
+	  try
+	  {
+			char* name = argv[1];
+
+			if (name == nullptr) {
+				return EXIT_SUCCESS;
+			}
+
+			app _app(argc, argv, "Buttons", "com.cycfi.buttons");
+			window _win(_app.name());
+			_win.on_close = [&_app]() { _app.stop(); };
+
+			view view_(_win);
+
+			std::function a = [&]() {
+				vector<Command> command_list = s.get(name);
+
+				vtile_composite container;
+
+				for (Command command : command_list) {
+					//format fmter(command.line);
+						//string input = param.prompt();
+						// param.
+
+						//return string(dependency_test::lib_a::InputBox(
+						//	const_cast<char*>(description.c_str()),
+						//	const_cast<char*>(display_name.c_str()),
+						//	const_cast<char*>(default_value.c_str())));
+
+						//if (input.empty()) {
+						//	cout << "Invalid input" << endl;
+						//	std::system("pause");
+						//}
+						//fmter = fmter % input;
 
 
-	//YAML::Node config = YAML::LoadFile("../../../config.yaml");
+				
 
-	//if (config["name"]) {
-	//	cout << "name: " << config["name"].as<string>() << "\n";
-	//}
+					//string cl = fmter.str();
+					//if (cl.empty()) {
+					//	cout << "Invalid input" << endl;
+					//	std::system("pause");
+					//}
+					//else {
+					//	cout << cl << endl;
+					//	std::system(cl.c_str());
+					//}
 
-	Setting s(boost::dll::program_location().parent_path() / "cw-scripts");
+					
+					for (Param p : command.param_list) {
+						container.push_back(share(group(p.display_name,
+							margin({ 10, 10, 20, 20 },
+								top_margin(25,
+									vtile(
 
-  try
-  {
-	  s.get(argv[1]);
+									)
+								)
+							)
+						)));
+					}
+
+
+				}
 
 
 
-	app _app(argc, argv, "Buttons", "com.cycfi.buttons");
-	window _win(_app.name());
-	_win.on_close = [&_app]() { _app.stop(); };
+				//read_row();
 
-	view view_(_win);
 
-	view_.content(
-		make_controls(view_),
-		background
-	);
+				//std::experimental::apply(([](auto&&... args) {
+				//	vtile(std::forward<decltype(args)>(args)...);
+				//}, std::pair());
 
-	_app.run();
+				//auto c = read_row<1>(command_list.at(0).param_list);;
+				return container;
+					/*margin({ 20, 20, 20, 20 }, vtile())*/
+			};
 
-	  
-	 
+			view_.content(make_controls(view_, a), background);
 
-	 //
+			_app.run();
 
-	 return EXIT_SUCCESS;
-  }
-  catch (const std::exception& e)
-  {
-    cerr << "Error: " << e.what() << endl;
-  }
-  catch (...)
-  {
-    cerr << "Unexpected error" << endl;
-  }
-  return EXIT_FAILURE;
+			return EXIT_SUCCESS;
+	  }
+	  catch (const std::exception& e)
+	  {
+		cerr << "Error: " << e.what() << endl;
+	  }
+	  catch (...)
+	  {
+		cerr << "Unexpected error" << endl;
+	  }
+	  return EXIT_FAILURE;
 }
