@@ -92,9 +92,13 @@ auto make_buttons(view& view_)
 		);
 }
 
-template <typename Container, typename Base>
-auto make_controls(view& view_, std::function<composite<Container, Base>(void)> renderer)
+
+
+template<typename T>
+auto make_controls(view& view_, std::vector<T>& command_list)
 {
+	std::vector<std::shared_ptr<static_text_box>> a;
+
 	auto  check_box1 = share(check_box("Reionizing electrons"));
 	auto  check_box2 = check_box("The Nexus Meridian Unfolding");
 	auto  check_box3 = check_box("Serenity Dreamscape Exploration");
@@ -137,20 +141,82 @@ auto make_controls(view& view_, std::function<composite<Container, Base>(void)> 
 
 	auto indicator_color = get_theme().indicator_color;
 
+	vtile_composite container;
+
+	/*for (Command command : command_list) {*/
+		//format fmter(command.line);
+			//string input = param.prompt();
+			// param.
+
+			//return string(dependency_test::lib_a::InputBox(
+			//	const_cast<char*>(description.c_str()),
+			//	const_cast<char*>(display_name.c_str()),
+			//	const_cast<char*>(default_value.c_str())));
+
+			//if (input.empty()) {
+			//	cout << "Invalid input" << endl;
+			//	std::system("pause");
+			//}
+			//fmter = fmter % input;
+
+
+	/*template <typename Container, typename Base>
+//auto make_controls(view& view_, std::function<composite<Container, Base>(std::function<string(void)>)> renderer)
+*/
+
+		//string cl = fmter.str();
+		//if (cl.empty()) {
+		//	cout << "Invalid input" << endl;
+		//	std::system("pause");
+		//}
+		//else {
+		//	cout << cl << endl;
+		//	std::system(cl.c_str());
+		//}
+	Command cmd = command_list.at(0);
+
+	for (Param p : cmd.param_list) {
+		auto textbox = share(static_text_box(p.description));
+		auto input_pair = input_box("Show me more");
+
+		a.push_back(input_pair.second);
+
+		container.push_back(share(group(p.display_name,
+			margin({ 10, 10, 20, 20 },
+				top_margin(25,
+					vtile(
+						top_margin(10, left_caption(input_pair.first, p.display_name)),
+						//label(p.description)
+						hmin_size(350, top_margin(10, hold(textbox)))
+					)
+				)
+			)
+		)));
+	}
+
 	auto executeButton = button("Momentary Button");
-	executeButton.on_click = [check_box1](bool) {
+	executeButton.on_click = [a, cmd](bool) mutable {
+		string line = cmd.line;
+
+		format fmter(line);
+
+		for (auto reader : a) {
+			fmter = fmter % reader->get_text();
+		}
+
+		auto output = fmter.str();
+
 		MessageBox(
 			NULL,
-			(LPCWSTR)(check_box1->value() ? L"true": L"false"),
-			(LPCWSTR)L"Account Details",
+			/*(LPCWSTR)(L"sdf")*/
+			(LPCWSTR)(std::wstring(output.begin(), output.end()).c_str()),
+			(LPCWSTR)(L"sdf"),
 			MB_ICONWARNING | MB_CANCELTRYCONTINUE | MB_DEFBUTTON2
 		);
 
 		//std::system(cl.c_str());
 	};
-	
-	
-	
+
 	auto  icon_buttons =
 		vtile(
 			top_margin(35,
@@ -162,8 +228,7 @@ auto make_controls(view& view_, std::function<composite<Container, Base>(void)> 
 
 	return
 		vtile(
-			vscroller(margin({ 20, 20, 20, 20 }, renderer()))
-			,
+			vscroller(margin({ 20, 20, 20, 20 }, container)),
 			htile(
 				hmin_size(250, margin({ 20, 20, 20, 20 }, icon_buttons))
 				//, hmin_size(250, margin({ 20, 20, 20, 20 }, sprite_buttons))
@@ -231,22 +296,8 @@ class Command {
 public:
 	string line;
 	vector<Param> param_list;
-
-	//string print() {
-	//	format fmter(line);
-	//	for (Param param : this->param_list) {
-	//		string input = param.prompt();
-	//		if (input.empty()) {
-	//			return string();
-	//		}
-	//		fmter = fmter % input;
-	//	}
-
-	//	return fmter.str();
-	//}
 };
 
-//MsgBox("Hello World!", 3, "MsgBox Example")
 // Per JSON
 class WrappedCommand {
 public:
@@ -375,15 +426,16 @@ int main(int argc, char* argv[])
 {
 	//_putenv(string("PATH=").append(getenv("PATH")).append("c:\\mylib;c:\\yourlib").c_str());
 
-
-		Setting s(boost::dll::program_location().parent_path() / "cw-scripts");
+	Setting s(boost::dll::program_location().parent_path() / "cw-scripts");
 
 	  try
 	  {
 			char* name = argv[1];
 
 			if (name == nullptr) {
-				return EXIT_SUCCESS;
+
+				//return EXIT_SUCCESS;
+				name = "mssql";
 			}
 
 			app _app(argc, argv, "Buttons", "com.cycfi.buttons");
@@ -392,71 +444,7 @@ int main(int argc, char* argv[])
 
 			view view_(_win);
 
-			std::function a = [&]() {
-				vector<Command> command_list = s.get(name);
-
-				vtile_composite container;
-
-				for (Command command : command_list) {
-					//format fmter(command.line);
-						//string input = param.prompt();
-						// param.
-
-						//return string(dependency_test::lib_a::InputBox(
-						//	const_cast<char*>(description.c_str()),
-						//	const_cast<char*>(display_name.c_str()),
-						//	const_cast<char*>(default_value.c_str())));
-
-						//if (input.empty()) {
-						//	cout << "Invalid input" << endl;
-						//	std::system("pause");
-						//}
-						//fmter = fmter % input;
-
-
-				
-
-					//string cl = fmter.str();
-					//if (cl.empty()) {
-					//	cout << "Invalid input" << endl;
-					//	std::system("pause");
-					//}
-					//else {
-					//	cout << cl << endl;
-					//	std::system(cl.c_str());
-					//}
-
-					
-					for (Param p : command.param_list) {
-						container.push_back(share(group(p.display_name,
-							margin({ 10, 10, 20, 20 },
-								top_margin(25,
-									vtile(
-
-									)
-								)
-							)
-						)));
-					}
-
-
-				}
-
-
-
-				//read_row();
-
-
-				//std::experimental::apply(([](auto&&... args) {
-				//	vtile(std::forward<decltype(args)>(args)...);
-				//}, std::pair());
-
-				//auto c = read_row<1>(command_list.at(0).param_list);;
-				return container;
-					/*margin({ 20, 20, 20, 20 }, vtile())*/
-			};
-
-			view_.content(make_controls(view_, a), background);
+			view_.content(make_controls(view_, s.get(name)), background);
 
 			_app.run();
 
