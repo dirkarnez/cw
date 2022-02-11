@@ -11,5 +11,6 @@ A generic command wrapper
 - [ ] GUI for command list with tags
 - [ ] Variables
   - [adeharo9/cpp-dotenv: Loads environment variables from .env files for C++ projects.](https://github.com/adeharo9/cpp-dotenv#variable-resolution)
+- [ ] Profiles
 ### Scripts
 - [cw-scripts](https://github.com/dirkarnez/cw-scripts)
