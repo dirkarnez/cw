@@ -12,6 +12,7 @@ A generic command wrapper
 - [ ] Variables
   - [**dirkarnez/string-substitutions-playground**](https://github.com/dirkarnez/string-substitutions-playground)
   - [adeharo9/cpp-dotenv: Loads environment variables from .env files for C++ projects.](https://github.com/adeharo9/cpp-dotenv#variable-resolution)
-- [ ] Profiles (environment settings with execution placeholder(s)) 
+- [ ] Profiles (e.g. for C++ development) 
+  - environment settings with execution placeholder(s)?
 ### Scripts
 - [cw-scripts](https://github.com/dirkarnez/cw-scripts)
