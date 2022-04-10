@@ -13,6 +13,8 @@ A generic command wrapper
   - [**dirkarnez/string-substitutions-playground**](https://github.com/dirkarnez/string-substitutions-playground)
   - [adeharo9/cpp-dotenv: Loads environment variables from .env files for C++ projects.](https://github.com/adeharo9/cpp-dotenv#variable-resolution)
   - [**dirkarnez/boost-env-boilerplate**](https://github.com/dirkarnez/boost-env-boilerplate)
+  - passing variable or return value between steps
+  - session-like variable (like docker container id) for random access
 - [ ] Profiles (e.g. for C++ development) 
   - environment settings with execution placeholder(s)?
 ### Scripts
