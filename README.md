@@ -15,6 +15,7 @@ A generic command wrapper
   - [**dirkarnez/boost-env-boilerplate**](https://github.com/dirkarnez/boost-env-boilerplate)
   - passing variable or return value between steps
   - session-like variable (like docker container id) for random access
+  - conditional step (like github workflow)
 - [ ] Profiles (e.g. for C++ development) 
   - environment settings with execution placeholder(s)?
 ### Scripts
