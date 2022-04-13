@@ -19,5 +19,12 @@ A generic command wrapper
     - prerequisites
 - [ ] Profiles (e.g. for C++ development) 
   - environment settings with execution placeholder(s)?
+- [ ] Autocompletion
+  - say typing "docker" will show all things related to docker
+  - `.cw` scripts and their usage are not meant to be memorized
+### Notes
+- Should not touch `%PATH%`, including this software
+  - pin to taskbar is ok
+
 ### Scripts
 - [cw-scripts](https://github.com/dirkarnez/cw-scripts)
