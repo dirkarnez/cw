@@ -16,6 +16,7 @@ A generic command wrapper
   - passing variable or return value between steps
   - session-like variable (like docker container id) for random access
   - conditional step (like github workflow)
+    - prerequisites
 - [ ] Profiles (e.g. for C++ development) 
   - environment settings with execution placeholder(s)?
 ### Scripts
