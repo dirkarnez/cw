@@ -6,6 +6,8 @@ A generic command wrapper
 - [ ] nested `.cw` script
 - [ ] basic string functions
   - [ ] slash conversion
+  - [ ] string part extraction
+- [ ] child process stdin + stdout Redirection
 - [ ] [ohmyzsh/ohmyzsh](https://github.com/ohmyzsh/ohmyzsh)
 - [ ] [walterschell/Lua: CMake based build of Lua (5.4.3 and 5.3.3)](https://github.com/walterschell/Lua)
 - [ ] GUI for command list with tags
