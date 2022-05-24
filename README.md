@@ -4,7 +4,7 @@ A generic command wrapper
 
 ### TODOs
 - [ ] nested `.cw` script
-- [ ] `.secret` file
+- [ ] `.secret` file (as a replacement for hardcoded .bat / .sh)
 - [ ] basic string functions
   - [ ] slash conversion
   - [ ] string part extraction
