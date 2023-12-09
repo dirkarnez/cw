@@ -29,6 +29,8 @@ A generic command wrapper
   - `.cw` scripts and their usage are not meant to be memorized
   - fuzzy search on `.cw` script contents and tags 
 - [ ] Should support cli (for CICD environment)
+- [ ] mutex
+  - [dirkarnez/cpp-mutex-playground](https://github.com/dirkarnez/cpp-mutex-playground/)
 ### Notes
 - Should not touch `%PATH%`, including this software
   - pin to taskbar is ok
