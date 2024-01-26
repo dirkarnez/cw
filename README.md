@@ -18,6 +18,7 @@ A generic command wrapper
 - [ ] [ohmyzsh/ohmyzsh](https://github.com/ohmyzsh/ohmyzsh)
 - [ ] [walterschell/Lua: CMake based build of Lua (5.4.3 and 5.3.3)](https://github.com/walterschell/Lua)
 - [ ] GUI for command list with tags
+- [ ] Repl mode
 - [ ] Variables
   - [**dirkarnez/string-substitutions-playground**](https://github.com/dirkarnez/string-substitutions-playground)
   - [adeharo9/cpp-dotenv: Loads environment variables from .env files for C++ projects.](https://github.com/adeharo9/cpp-dotenv#variable-resolution)
