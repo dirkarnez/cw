@@ -8,8 +8,12 @@ A generic command wrapper
 - [ ] basic string functions
   - [ ] slash conversion
   - [ ] string part extraction
-- [ ] built-in IO
-  - replace content (template file)
+- [ ] built-in
+    - IO
+      - replace content (template file)
+    - http curl client
+    - multiple instance mutex
+      - https://github.com/dirkarnez/cpp-mutex-playground
 - [ ] child process stdin + stdout Redirection
 - [ ] [ohmyzsh/ohmyzsh](https://github.com/ohmyzsh/ohmyzsh)
 - [ ] [walterschell/Lua: CMake based build of Lua (5.4.3 and 5.3.3)](https://github.com/walterschell/Lua)
@@ -29,8 +33,7 @@ A generic command wrapper
   - `.cw` scripts and their usage are not meant to be memorized
   - fuzzy search on `.cw` script contents and tags 
 - [ ] Should support cli (for CICD environment)
-- [ ] mutex
-  - [dirkarnez/cpp-mutex-playground](https://github.com/dirkarnez/cpp-mutex-playground/)
+
 ### Notes
 - Should not touch `%PATH%`, including this software
   - pin to taskbar is ok
