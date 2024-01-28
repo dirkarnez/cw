@@ -34,6 +34,30 @@ A generic command wrapper
   - `.cw` scripts and their usage are not meant to be memorized
   - fuzzy search on `.cw` script contents and tags 
 - [ ] Should support cli (for CICD environment)
+- [ ] timeout
+  - ```c++
+    #include <iostream>
+    #include <boost/process.hpp>
+    #include <boost/asio.hpp>
+    
+    namespace bp = boost::process;
+    
+    int main() {
+        boost::asio::io_context io_context;
+        bp::child c("sleep 5", bp::std_out > stdout, bp::std_err > stderr, io_context);
+    
+        // Set a 5-second timeout
+        io_context.run_for(std::chrono::seconds(5));
+    
+        // Check if the child process has finished
+        if (c.running()) {
+            // If the child process is still running after 5 seconds, terminate it
+            c.terminate();
+        }
+    
+        return 0;
+    }
+    ```
 
 ### Notes
 - Should not touch `%PATH%`, including this software
