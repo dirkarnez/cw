@@ -59,6 +59,28 @@ A generic command wrapper
     }
     ```
 
+### Grammar
+```actionscript
+import default_env;
+
+export const name: string = "";
+export const (): error => {
+  synchronized await a(), n()
+  var hour: int = prompt("", 0);
+  var minute: int = prompt("", 0);
+  var second: int = prompt("", 0);
+
+  return exec({
+      ...default_env,
+      "PATH": Path(C:/Windows/System32)
+    },
+    this_script_location, //working_directory
+    "shutdown -s -f -t ${(hour * 60 * 60) + (minute * 60) + second}",
+    5
+  );
+}
+
+```
 ### Notes
 - Should not touch `%PATH%`, including this software
   - pin to taskbar is ok
