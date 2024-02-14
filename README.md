@@ -65,10 +65,11 @@ import default_env;
 
 export const name: string = "";
 export const (): error => {
-  synchronized await a(), n()
   var hour: int = prompt("", 0);
   var minute: int = prompt("", 0);
   var second: int = prompt("", 0);
+
+  synchronized download_movie(), download_music()
 
   return exec({
       ...default_env,
