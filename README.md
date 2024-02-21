@@ -3,6 +3,7 @@ cw
 A generic command wrapper
 
 ### TODOs
+- [ ] use [`CreateProcessW`](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw)
 - [ ] nested `.cw` script
 - [ ] `.secret` file (as a replacement for hardcoded .bat / .sh)
 - [ ] basic string functions
