@@ -17,6 +17,7 @@ A generic command wrapper
       - https://github.com/dirkarnez/cpp-mutex-playground
 - [ ] child process stdin + stdout Redirection
 - [ ] [ohmyzsh/ohmyzsh](https://github.com/ohmyzsh/ohmyzsh)
+- [ ] [malxau/yori: Yori is a CMD replacement shell that supports backquotes, job control, and improves tab completion, file matching, aliases, command history, and more.](https://github.com/malxau/yori)
 - [ ] [walterschell/Lua: CMake based build of Lua (5.4.3 and 5.3.3)](https://github.com/walterschell/Lua)
 - [ ] GUI for command list with tags
 - [ ] Repl mode
