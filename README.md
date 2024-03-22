@@ -62,6 +62,7 @@ A generic command wrapper
     ```
 - [ ] cross-platform
   - [lipnitsk/llconf: Automatically exported from code.google.com/p/llconf](https://github.com/lipnitsk/llconf)
+- [ ] Download using libcurl 
 ### Grammar
 ```actionscript
 import default_env;
